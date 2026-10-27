@@ -1,64 +1,36 @@
-# NYC Taxi Fare Prediction & Operations Optimization 🚖🏙️
+# NYC taxi trip exploration and fare calculator
 
-> **An end-to-end Big Data Exploratory Data Analysis (EDA) and predictive regression pipeline analyzing 1.89 Million NYC Yellow Taxi trips across 12 monthly Parquet files by Abhi Gurjar.**
+A notebook exploring sampled NYC yellow-taxi trips, alongside a standalone, rule-based fare calculator. The calculator uses hand-written distance, time, airport, and tip rules; it does not load a trained regression model.
 
----
-
-## 💡 What Is This Project? (Explained Like a Human)
-
-New York City is one of the busiest metropolitan transit hubs on Earth. Every day, tens of thousands of yellow cabs take passengers through Manhattan gridlock, airport corridors (JFK & LaGuardia), and outer boroughs.
-
-For riders, getting hit with an unexpected \$60 fare due to traffic or confusing peak-hour surcharges causes frustration. For fleet dispatchers, failing to predict demand means hundreds of cabs idle in Queens while thousands of passengers are stranded in Midtown during rainstorms.
-
-**This project performs a comprehensive Big Data investigation on 1.89 Million real NYC taxi trips.** It models the pricing dynamics—including distance multipliers, rush hour bottlenecks, congestion zone fees, airport flat rates, and tip distributions—and provides an instant fare estimation engine.
-
----
-
-## 📊 Big Data Analytics Highlights
-
-- **Dataset Scale**: Analyzed 1.89 Million taxi trip records across 12 monthly Parquet files from the NYC Taxi & Limousine Commission (TLC).
-- **Temporal Patterns**: Evaluated hourly demand spikes (8:00 AM morning commute and 5:00 PM – 7:00 PM evening peak).
-- **Spatial Analysis**: Mapped pickup and dropoff zone density, calculating average speeds and congestion drag across Manhattan zones.
-- **Tipping Behavior**: Discovered that credit card transactions cluster sharply at standard 18%, 20%, and 25% tip brackets, while cash trips record zero recorded tips in official TLC ledgers.
-
----
-
-## 🚀 How to Run in 5 Seconds
-
-Zero external setup needed to test the pricing model:
+## Quick demo and tests
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/abhigurjar101/nyc-taxi-fare-prediction.git
 cd nyc-taxi-fare-prediction
-
-# 2. Run the fare calculation engine
 python3 predict_fare.py
+python3 -m unittest discover -s tests -v
 ```
 
-### What You Will See:
-- Dynamic meter calculation comparing standard Midtown trips vs. Evening Rush Hour vs. JFK Airport flat-rate trips.
-- Itemized surcharges (NYC Congestion Fee, Night Surcharge, Airport Access Fee).
-- Estimated tip recommendation and final predicted total.
+These two commands require only Python's standard library. The examples print a fare breakdown. They are demonstrations; the test suite contains assertions.
 
----
+## Reproduce the notebook
 
-## 📁 Repository Structure
+1. Create a virtual environment and install `requirements.txt`.
+2. Obtain yellow-taxi trip Parquet files and taxi-zone shapefiles from the [NYC TLC trip-record data page](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page).
+3. Set `NYC_TAXI_DATA_DIR` to the Parquet directory and `NYC_TAXI_ZONES_PATH` to the `.shp` file, including its supporting shapefile files.
+4. Launch `jupyter lab` and run `notebooks/EDA_Optimising_NYC_Taxis_Abhi_Gurjar.ipynb` from top to bottom.
 
-```
-nyc-taxi-fare-prediction/
-├── notebooks/
-│   └── EDA_Optimising_NYC_Taxis_Abhi_Gurjar.ipynb  # Comprehensive 1.89M trip EDA
-├── predict_fare.py                                  # Standalone fare estimator
-├── requirements.txt                                 # Pandas, PyArrow, Scikit-Learn
-└── README.md                                        # You are here! Simple human documentation
-```
+The notebook samples 5% from each available Parquet file with seed 42, concatenates the sample, maps pickup density, and explores demand, fare revenue, and tips. Original data are not bundled. Row count depends on the input files; cached notebook output is not a fresh benchmark. Loading each whole monthly file before sampling can require substantial memory.
 
----
+## Scope
 
-## 👤 Author
+The fare calculator is illustrative. Its constants and traffic multipliers are assumptions, it applies congestion fees unconditionally, and it omits parts of the official tariff and route eligibility rules. It is not a current taxi quote. Passenger count is validated and reported but does not change price. No holdout MAE, RMSE, or R² result is claimed. The next modeling step is a reproducible train/test workflow with leakage checks, a baseline, and held-out metrics.
 
-**Abhi Gurjar**  
-- Portfolio: [abhigurjar.vercel.app](https://abhigurjar.vercel.app)  
-- GitHub: [@abhigurjar101](https://github.com/abhigurjar101)  
-- LinkedIn: [Abhi Gurjar](https://in.linkedin.com/in/abhi-gurjar-b13067203)
+## Structure
+
+- `notebooks/`: exploratory analysis
+- `predict_fare.py`: illustrative calculator
+- `tests/`: invalid inputs, surcharge boundaries and arithmetic consistency
+- `.github/workflows/tests.yml`: regression checks
+
+[Abhi Kumar Gurjar](https://www.linkedin.com/in/abhigurjar) · Data Scientist & GenAI Engineer
