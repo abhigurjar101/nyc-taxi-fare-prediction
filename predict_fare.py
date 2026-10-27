@@ -5,11 +5,10 @@ time of day, passenger count, airport surcharges, and congestion fees.
 """
 
 import math
-from datetime import datetime
 from typing import Dict, Any
 
 
-# Standard NYC TLC Rate Card Constants
+# Illustrative demo constants; not a complete or current official tariff.
 BASE_FARE = 3.00
 PER_MILE_RATE = 2.80
 CONGESTION_SURCHARGE = 2.50
@@ -30,8 +29,17 @@ def predict_taxi_fare(
     """
     Predicts NYC Yellow Taxi fare breakdown and estimated tip.
     """
-    if trip_distance_miles <= 0:
-        return {"error": "Trip distance must be greater than 0"}
+    if (isinstance(trip_distance_miles, bool) or not isinstance(trip_distance_miles, (int, float))
+            or not math.isfinite(trip_distance_miles) or trip_distance_miles <= 0):
+        return {"error": "Trip distance must be a finite number greater than 0"}
+    if isinstance(pickup_hour, bool) or not isinstance(pickup_hour, int) or not 0 <= pickup_hour <= 23:
+        return {"error": "Pickup hour must be an integer from 0 to 23"}
+    if isinstance(passenger_count, bool) or not isinstance(passenger_count, int) or not 1 <= passenger_count <= 6:
+        return {"error": "Passenger count must be an integer from 1 to 6"}
+    if not all(isinstance(flag, bool) for flag in (is_weekday, is_jfk_airport, is_laguardia)):
+        return {"error": "Weekday and airport flags must be booleans"}
+    if is_jfk_airport and is_laguardia:
+        return {"error": "Select at most one airport mode"}
 
     if is_jfk_airport:
         meter_fare = JFK_FLAT_RATE
@@ -99,7 +107,7 @@ def main():
         print(f"   • Total Estimated:  ${res['estimated_total_fare']}")
 
     print("\n" + "=" * 80)
-    print("✅ All NYC taxi prediction scenarios verified successfully!")
+    print("Demo complete. Run the test suite for assertions.")
     print("=" * 80)
 
 
